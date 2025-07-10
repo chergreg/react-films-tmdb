@@ -14,9 +14,9 @@ const AppNavbar: React.FC = () => {
             <Nav.Link as={Link} to="/recherche">Recherche</Nav.Link>
             <Nav.Link as={Link} to="/about">À propos</Nav.Link>
             <NavDropdown title="Films (tests)" id="films-dropdown">
-              <NavDropdown.Item as={Link} to="/film/1">Film 1</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/film/2">Film 2</NavDropdown.Item>
-              <NavDropdown.Item as={Link} to="/film/3">Film 3</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/film/671">Harry Potter à l'école des sorciers</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/film/673">Harry Potter et le Prisonnier d'Azkaban</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/film/674">Film 3</NavDropdown.Item>
             </NavDropdown>
             <NavDropdown title="Acteurs (tests)" id="acteurs-dropdown">
               <NavDropdown.Item as={Link} to="/acteur/10">Acteur 10</NavDropdown.Item>
