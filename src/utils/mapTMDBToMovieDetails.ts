@@ -69,7 +69,7 @@ export function mapTMDBToMovieDetails(
     voteAverage: movie.vote_average,
     voteCount: movie.vote_count,
     runtime: movie.runtime,
-    genres: movie.genres.map(g => g.name),
+    genres: movie.genres.map(g => ({ id: g.id, name: g.name })),
     productionCountries: movie.production_countries.map(c => c.name),
     originalLanguage: movie.original_language,
     budget: movie.budget,

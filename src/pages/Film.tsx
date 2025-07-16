@@ -1,5 +1,5 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useMovieDetails } from '../hooks/useMovieDetails';
 import { Container, Row, Col, Spinner, Alert, Card, Badge } from 'react-bootstrap';
 
@@ -59,9 +59,20 @@ const Film: React.FC = () => {
             <Badge bg="info" className="me-2">{movieDetails.releaseDate}</Badge>
             <Badge bg="secondary" className="me-2">{movieDetails.runtime} min</Badge>
             <Badge bg="warning" className="me-2">{movieDetails.voteAverage} / 10</Badge>
-            {movieDetails.genres.map(g => (
-              <Badge bg="light" text="dark" key={g} className="me-1">{g}</Badge>
-            ))}
+            <div className="mb-2">
+              {/* autres badges (date, durée, note, etc.) */}
+              {movieDetails.genres.map(g => (
+                <Link
+                  key={g.id}
+                  to={`/categorie/${g.id}`}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <Badge bg="light" text="dark" className="me-1" style={{ cursor: 'pointer' }}>
+                    {g.name}
+                  </Badge>
+                </Link>
+              ))}
+            </div>
           </div>
           <p>{movieDetails.overview}</p>
           <ul>
@@ -90,18 +101,20 @@ const Film: React.FC = () => {
           <Row>
             {movieDetails.cast.map(actor => (
               <Col key={actor.id} xs={6} md={4} lg={3} className="mb-3">
-                <Card>
-                  <Card.Img
-                    variant="top"
-                    src={actor.photoUrl ?? '/profile_placeholder.png'}
-                    alt={actor.name}
-                  />
-                  <Card.Body>
-                    <strong>{actor.name}</strong>
-                    <br />
-                    <small className="text-muted">{actor.character}</small>
-                  </Card.Body>
-                </Card>
+                <Link to={`/acteur/${actor.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                  <Card className="h-100">
+                    <Card.Img
+                      variant="top"
+                      src={actor.photoUrl ?? '/profile_placeholder.png'}
+                      alt={actor.name}
+                    />
+                    <Card.Body>
+                      <strong>{actor.name}</strong>
+                      <br />
+                      <small className="text-muted">{actor.character}</small>
+                    </Card.Body>
+                  </Card>
+                </Link>
               </Col>
             ))}
           </Row>

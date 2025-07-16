@@ -11,7 +11,7 @@ export interface MovieDetails {
   voteAverage: number;
   voteCount: number;
   runtime: number | null;
-  genres: string[];
+  genres: { id: number; name: string }[];
   productionCountries: string[];
   originalLanguage: string;
   budget: number;
