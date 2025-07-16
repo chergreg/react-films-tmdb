@@ -1,29 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useParams } from 'react-router-dom';
-import { fetchMovie } from '../api/tmdb';
-import type { Movie } from '../types/Movie';
-import { Container, Row, Col, Spinner, Alert, Card } from 'react-bootstrap';
+import { useMovieDetails } from '../hooks/useMovieDetails';
+import { Container, Row, Col, Spinner, Alert, Card, Badge } from 'react-bootstrap';
 
 const Film: React.FC = () => {
   const { id } = useParams<{ id: string }>();
-  const [movie, setMovie] = useState<Movie | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!id) return;
-    setLoading(true);
-    fetchMovie(id)
-      .then(data => {
-        setMovie(data);
-        setError(null);
-      })
-      .catch(err => {
-        console.error("Erreur API TMDB :", err);
-        setError(err.message);
-      })
-      .finally(() => setLoading(false));
-  }, [id]);
+  const { movieDetails, loading, error } = useMovieDetails(id);
 
   if (loading) {
     return (
@@ -42,31 +24,103 @@ const Film: React.FC = () => {
     );
   }
 
-  if (!movie) {
-    return null;
-  }
+  if (!movieDetails) return null;
 
   return (
     <Container className="py-5">
       <Row>
         <Col md={4}>
           <Card>
-            <Card.Img 
-              src={movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : '/placeholder.jpg'}
-              alt={movie.title}
-            />
+            <Card.Img src={movieDetails.posterUrl ?? '/placeholder.jpg'} alt={movieDetails.title} />
           </Card>
+          {movieDetails.streamingProviders.length > 0 && (
+            <Card className="mt-3">
+              <Card.Body>
+                <h5>Disponible sur :</h5>
+                <div>
+                  {movieDetails.streamingProviders.map(p => (
+                    <img
+                      key={p.name}
+                      src={p.logoUrl}
+                      alt={p.name}
+                      title={p.name}
+                      style={{ height: 32, marginRight: 8 }}
+                    />
+                  ))}
+                </div>
+              </Card.Body>
+            </Card>
+          )}
         </Col>
         <Col md={8}>
-          <h2>{movie.title}</h2>
-          <p><em>{movie.tagline}</em></p>
-          <p>{movie.overview}</p>
+          <h2>{movieDetails.title} <small>({movieDetails.originalTitle})</small></h2>
+          {movieDetails.tagline && <p className="fst-italic">{movieDetails.tagline}</p>}
+          <div className="mb-2">
+            <Badge bg="info" className="me-2">{movieDetails.releaseDate}</Badge>
+            <Badge bg="secondary" className="me-2">{movieDetails.runtime} min</Badge>
+            <Badge bg="warning" className="me-2">{movieDetails.voteAverage} / 10</Badge>
+            {movieDetails.genres.map(g => (
+              <Badge bg="light" text="dark" key={g} className="me-1">{g}</Badge>
+            ))}
+          </div>
+          <p>{movieDetails.overview}</p>
           <ul>
-            <li><strong>Date de sortie :</strong> {movie.release_date}</li>
-            <li><strong>Durée :</strong> {movie.runtime} min</li>
-            <li><strong>Note :</strong> {movie.vote_average} / 10</li>
-            <li><strong>Genres :</strong> {movie.genres.map(g => g.name).join(', ')}</li>
+            <li><strong>Pays :</strong> {movieDetails.productionCountries.join(', ')}</li>
+            <li><strong>Langue originale :</strong> {movieDetails.originalLanguage}</li>
+            <li><strong>Budget :</strong> {movieDetails.budget.toLocaleString()} $</li>
+            <li><strong>Recette :</strong> {movieDetails.revenue.toLocaleString()} $</li>
+            <li><strong>Réalisateur :</strong> {movieDetails.director?.name ?? 'Inconnu'}</li>
+            {movieDetails.homepage && (
+              <li>
+                <a href={movieDetails.homepage} target="_blank" rel="noopener noreferrer">
+                  Site officiel
+                </a>
+              </li>
+            )}
+            {movieDetails.imdbUrl && (
+              <li>
+                <a href={movieDetails.imdbUrl} target="_blank" rel="noopener noreferrer">
+                  IMDb
+                </a>
+              </li>
+            )}
           </ul>
+
+          <h5>Casting principal</h5>
+          <Row>
+            {movieDetails.cast.map(actor => (
+              <Col key={actor.id} xs={6} md={4} lg={3} className="mb-3">
+                <Card>
+                  <Card.Img
+                    variant="top"
+                    src={actor.photoUrl ?? '/profile_placeholder.png'}
+                    alt={actor.name}
+                  />
+                  <Card.Body>
+                    <strong>{actor.name}</strong>
+                    <br />
+                    <small className="text-muted">{actor.character}</small>
+                  </Card.Body>
+                </Card>
+              </Col>
+            ))}
+          </Row>
+
+          {movieDetails.trailerYoutubeId && (
+            <div className="my-4">
+              <h5>Bande-annonce</h5>
+              <div style={{ position: 'relative', paddingBottom: '56.25%', height: 0 }}>
+                <iframe
+                  title="Bande-annonce"
+                  src={`https://www.youtube.com/embed/${movieDetails.trailerYoutubeId}`}
+                  style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+                  frameBorder="0"
+                  allow="autoplay; encrypted-media"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          )}
         </Col>
       </Row>
     </Container>
