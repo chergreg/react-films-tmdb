@@ -2,6 +2,8 @@ import type { TMDBMovie } from '../types/TMDBMovie';
 import type { TMDBCredits } from '../types/TMDBCredits';
 import type { TMDBVideos } from '../types/TMDBVideos';
 import type { TMDBWatchProviders } from '../types/TMDBWatchProviders';
+import type { TMDBMoviesByGenreResponse } from '../types/TMDBMoviesByGenreResponse';
+import type { TMDBGenre } from '../types/TMDBGenre';
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const BASE_URL = 'https://api.themoviedb.org/3';
@@ -40,4 +42,22 @@ export function fetchTMDBVideos(id: string): Promise<TMDBVideos> {
 export function fetchTMDBWatchProviders(id: string): Promise<TMDBWatchProviders> {
   const url = `${BASE_URL}/movie/${id}/watch/providers?api_key=${API_KEY}`;
   return safeFetch<TMDBWatchProviders>(url);
+}
+
+// Films par Catégorie
+export function fetchMoviesByGenre(genreId: string, page: number = 1): Promise<TMDBMoviesByGenreResponse> {
+  const url = `${BASE_URL}/discover/movie?api_key=${API_KEY}&with_genres=${genreId}&language=fr-FR&page=${page}&sort_by=popularity.desc`;
+  return safeFetch<TMDBMoviesByGenreResponse>(url);
+}
+
+// Nom des Catégories
+export async function fetchGenres(): Promise<TMDBGenre[]> {
+  const url = `${BASE_URL}/genre/movie/list?api_key=${API_KEY}&language=fr-FR`;
+  const response = await fetch(url);
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Erreur ${response.status} : ${text}\nURL: ${url}`);
+  }
+  const data = await response.json();
+  return data.genres; // TMDB répond { genres: [...] }
 }
