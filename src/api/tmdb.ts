@@ -4,6 +4,8 @@ import type { TMDBVideos } from '../types/TMDBVideos';
 import type { TMDBWatchProviders } from '../types/TMDBWatchProviders';
 import type { TMDBMoviesByGenreResponse } from '../types/TMDBMoviesByGenreResponse';
 import type { TMDBGenre } from '../types/TMDBGenre';
+import type { TMDBSearchMoviesResponse } from '../types/TMDBSearchMoviesResponse';
+
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const BASE_URL = 'https://api.themoviedb.org/3';
@@ -60,4 +62,9 @@ export async function fetchGenres(): Promise<TMDBGenre[]> {
   }
   const data = await response.json();
   return data.genres; // TMDB répond { genres: [...] }
+}
+
+export function searchMovies(query: string, page: number = 1): Promise<TMDBSearchMoviesResponse> {
+  const url = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=fr-FR&query=${encodeURIComponent(query)}&page=${page}`;
+  return safeFetch<TMDBSearchMoviesResponse>(url);
 }
