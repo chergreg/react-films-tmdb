@@ -7,7 +7,8 @@ import 'swiper/css/effect-cards';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCards } from 'swiper/modules';
 import './Categorie.css';
-import { Container, Spinner, Alert, Pagination } from 'react-bootstrap';
+import { Container, Spinner, Alert, Pagination, Col, Row } from 'react-bootstrap';
+import FilmCard from '../components/FilmCard';
 
 const Categorie: React.FC = () => {
   const { genreId } = useParams<{ genreId: string }>();
@@ -152,26 +153,19 @@ const Categorie: React.FC = () => {
       </div>
 
       {/* Section 2 : Grille de films */}
-      <div className="grid-section">
-        <div className="film-grid">
-          {movies.map((film, idx) => (
-            <div className="film-card" key={film.id}>
-              <Link to={`/film/${film.id}`}>
-                <img
-                  src={
-                    film.poster_path
-                      ? `https://image.tmdb.org/t/p/w342${film.poster_path}`
-                      : "/placeholder.jpg"
-                  }
-                  alt={film.title}
-                />
-                <div className="title">{film.title}</div>
-                <div className="year">{film.release_date?.slice(0, 4) || "?"}</div>
-              </Link>
-            </div>
-          ))}
-        </div>
-      </div>
+      <Row>
+        {movies.length === 0 ? (
+          <Col>
+            <Alert variant="info">Aucun film trouvé.</Alert>
+          </Col>
+        ) : (
+          movies.map(movie => (
+            <Col key={movie.id} xs={6} md={4} lg={3} className="mb-4">
+              <FilmCard movie={movie} />
+            </Col>
+          ))
+        )}
+      </Row>
 
       {/* Pagination */}
       {totalPages > 1 && (

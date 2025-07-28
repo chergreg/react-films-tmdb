@@ -3,6 +3,7 @@ import { searchMovies } from '../api/tmdb';
 import type { TMDBMovieListItem } from '../types/TMDBMovieListItem';
 import { Container, Row, Col, Card, Spinner, Alert, Form, Pagination } from 'react-bootstrap';
 import { Link, useSearchParams } from 'react-router-dom';
+import FilmCard from '../components/FilmCard';
 
 const Recherche: React.FC = () => {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -117,26 +118,7 @@ const Recherche: React.FC = () => {
             ) : (
               movies.map(movie => (
                 <Col key={movie.id} xs={6} md={4} lg={3} className="mb-4">
-                  <Link to={`/film/${movie.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Card className="h-100">
-                      <Card.Img
-                        variant="top"
-                        src={movie.poster_path
-                          ? `https://image.tmdb.org/t/p/w342${movie.poster_path}`
-                          : '/placeholder.jpg'}
-                        alt={movie.title}
-                      />
-                      <Card.Body>
-                        <strong>{movie.title}</strong>
-                        <br />
-                        <small className="text-muted">{movie.release_date}</small>
-                        <div>Note : {movie.vote_average}</div>
-                        <div className="mt-2" style={{ fontSize: '0.85em', color: '#444' }}>
-                          {movie.overview.slice(0, 80)}...
-                        </div>
-                      </Card.Body>
-                    </Card>
-                  </Link>
+                  <FilmCard movie={movie} />
                 </Col>
               ))
             )}
