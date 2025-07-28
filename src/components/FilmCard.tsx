@@ -32,7 +32,7 @@ const FilmCard: React.FC<FilmCardProps> = ({
           src={
             movie.poster_path
               ? `https://image.tmdb.org/t/p/w342${movie.poster_path}`
-              : '/placeholder.jpg'
+              : '/placeholder.webp'
           }
           alt={movie.title}
         />

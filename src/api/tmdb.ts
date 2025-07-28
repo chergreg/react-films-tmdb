@@ -5,6 +5,8 @@ import type { TMDBWatchProviders } from '../types/TMDBWatchProviders';
 import type { TMDBMoviesByGenreResponse } from '../types/TMDBMoviesByGenreResponse';
 import type { TMDBGenre } from '../types/TMDBGenre';
 import type { TMDBSearchMoviesResponse } from '../types/TMDBSearchMoviesResponse';
+import type { TMDBPerson } from '../types/TMDBPerson';
+import type { TMDBPersonMovieCredits } from '../types/TMDBPersonMovieCredits';
 
 
 const API_KEY = import.meta.env.VITE_TMDB_API_KEY;
@@ -67,4 +69,14 @@ export async function fetchGenres(): Promise<TMDBGenre[]> {
 export function searchMovies(query: string, page: number = 1): Promise<TMDBSearchMoviesResponse> {
   const url = `${BASE_URL}/search/movie?api_key=${API_KEY}&language=fr-FR&query=${encodeURIComponent(query)}&page=${page}`;
   return safeFetch<TMDBSearchMoviesResponse>(url);
+}
+
+export function fetchTMDBPerson(id: string): Promise<TMDBPerson> {
+  const url = `${BASE_URL}/person/${id}?api_key=${API_KEY}&language=fr-FR`;
+  return safeFetch<TMDBPerson>(url);
+}
+
+export function fetchTMDBPersonMovieCredits(id: string): Promise<TMDBPersonMovieCredits> {
+  const url = `${BASE_URL}/person/${id}/movie_credits?api_key=${API_KEY}&language=fr-FR`;
+  return safeFetch<TMDBPersonMovieCredits>(url);
 }
