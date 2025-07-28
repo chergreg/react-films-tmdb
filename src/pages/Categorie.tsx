@@ -2,8 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { fetchMoviesByGenre, fetchGenres } from '../api/tmdb';
 import type { TMDBMovieListItem } from '../types/TMDBMovieListItem';
-import type { TMDBGenre } from '../types/TMDBGenre';
-import { Container, Row, Col, Card, Spinner, Alert, Pagination } from 'react-bootstrap';
+import 'swiper/css';
+import 'swiper/css/effect-cards';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { EffectCards } from 'swiper/modules';
+import './Categorie.css';
+import { Container, Spinner, Alert, Pagination } from 'react-bootstrap';
 
 const Categorie: React.FC = () => {
   const { genreId } = useParams<{ genreId: string }>();
@@ -17,7 +21,7 @@ const Categorie: React.FC = () => {
   const [totalResults, setTotalResults] = useState(0);
   const [genreName, setGenreName] = useState<string | null>(null);
 
-  // Chargement des films de la catégorie
+  // Récupère les films de la catégorie (page)
   useEffect(() => {
     if (!genreId) return;
     setLoading(true);
@@ -32,7 +36,7 @@ const Categorie: React.FC = () => {
       .finally(() => setLoading(false));
   }, [genreId, pageFromUrl]);
 
-  // Chargement du nom du genre
+  // Récupère le nom du genre
   useEffect(() => {
     if (!genreId) return;
     fetchGenres()
@@ -47,7 +51,7 @@ const Categorie: React.FC = () => {
     setSearchParams({ page: String(p) });
   };
 
-  // Pagination à la Google
+  // Pagination Google
   const paginationItems = [];
   const maxButtons = 7;
   const half = Math.floor(maxButtons / 2);
@@ -70,7 +74,6 @@ const Categorie: React.FC = () => {
       paginationItems.push(<Pagination.Ellipsis key="start-ellipsis" disabled />);
     }
   }
-
   for (let i = start; i <= end; i++) {
     paginationItems.push(
       <Pagination.Item
@@ -82,7 +85,6 @@ const Categorie: React.FC = () => {
       </Pagination.Item>
     );
   }
-
   if (end < totalPages) {
     if (end < totalPages - 1) {
       paginationItems.push(<Pagination.Ellipsis key="end-ellipsis" disabled />);
@@ -112,39 +114,66 @@ const Categorie: React.FC = () => {
   }
 
   return (
-    <Container className="py-5">
-      <h2>Catégorie : {genreName ?? genreId}</h2>
-      <p className="mb-3 text-end">
+    <div style={{ background: "#17181f", minHeight: "100vh", paddingBottom: 50 }}>
+      <h2 className="demo-title" style={{ marginTop: 30 }}>Catégorie : {genreName ?? genreId}</h2>
+      <p className="mb-3 text-end" style={{ marginRight: 20 }}>
         {totalResults} films trouvés — page {pageFromUrl} sur {totalPages}
       </p>
-      <Row>
-        {movies.map(movie => (
-          <Col key={movie.id} xs={6} md={4} lg={3} className="mb-4">
-            <Link to={`/film/${movie.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-              <Card className="h-100">
-                <Card.Img
-                  variant="top"
+
+      {/* Section 1 : Swiper Card Slider */}
+      <div className="swiper-container-fix">
+        <Swiper
+          effect="cards"
+          grabCursor={true}
+          centeredSlides={true}
+          slidesPerView={"auto"}
+          loop={true}
+          modules={[EffectCards]}
+          className="categorie-swiper"
+        >
+          {movies
+            .filter(m => m.backdrop_path)
+            .slice(0, 12) // max 12 slides pour garder un slider concis
+            .map((film, idx) => (
+            <SwiperSlide key={film.id}>
+              <div
+                className="slide-bg"
+                style={{
+                  backgroundImage: `url(https://image.tmdb.org/t/p/w780${film.backdrop_path})`,
+                }}
+              />
+              <div className="slide-content">
+                <div className="slide-title">{film.title}</div>
+                <div className="slide-year">{film.release_date?.slice(0, 4) || "?"}</div>
+              </div>
+            </SwiperSlide>
+          ))}
+        </Swiper>
+      </div>
+
+      {/* Section 2 : Grille de films */}
+      <div className="grid-section">
+        <div className="film-grid">
+          {movies.map((film, idx) => (
+            <div className="film-card" key={film.id}>
+              <Link to={`/film/${film.id}`}>
+                <img
                   src={
-                    movie.poster_path
-                      ? `https://image.tmdb.org/t/p/w342${movie.poster_path}`
-                      : '/placeholder.jpg'
+                    film.poster_path
+                      ? `https://image.tmdb.org/t/p/w342${film.poster_path}`
+                      : "/placeholder.jpg"
                   }
-                  alt={movie.title}
+                  alt={film.title}
                 />
-                <Card.Body>
-                  <strong>{movie.title}</strong>
-                  <br />
-                  <small className="text-muted">{movie.release_date}</small>
-                  <div>Note : {movie.vote_average}</div>
-                  <div className="mt-2" style={{ fontSize: '0.85em', color: '#444' }}>
-                    {movie.overview.slice(0, 80)}...
-                  </div>
-                </Card.Body>
-              </Card>
-            </Link>
-          </Col>
-        ))}
-      </Row>
+                <div className="title">{film.title}</div>
+                <div className="year">{film.release_date?.slice(0, 4) || "?"}</div>
+              </Link>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Pagination */}
       {totalPages > 1 && (
         <div className="my-4">
           <Pagination className="justify-content-center align-items-center">
@@ -160,7 +189,7 @@ const Categorie: React.FC = () => {
           </Pagination>
         </div>
       )}
-    </Container>
+    </div>
   );
 };
 

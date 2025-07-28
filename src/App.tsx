@@ -8,6 +8,8 @@ import Categorie from './pages/Categorie';
 import Acteur from './pages/Acteur';
 import Recherche from './pages/Recherche';
 import About from './pages/About';
+import Demo from './pages/Demo';
+
 
 const App: React.FC = () => {
   return (
@@ -20,6 +22,7 @@ const App: React.FC = () => {
         <Route path="/acteur/:id" element={<Acteur />} />
         <Route path="/recherche" element={<Recherche />} />
         <Route path="/about" element={<About />} />
+        <Route path="/demo" element={<Demo />} />
       </Routes>
     </>
   );

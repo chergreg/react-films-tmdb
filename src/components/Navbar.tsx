@@ -28,6 +28,7 @@ const AppNavbar: React.FC = () => {
               <NavDropdown.Item as={Link} to="/categorie/35">Comédie</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/categorie/18">Drame</NavDropdown.Item>
             </NavDropdown>
+            <Nav.Link as={Link} to="/demo">Demo</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>
